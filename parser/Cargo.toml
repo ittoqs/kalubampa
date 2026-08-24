@@ -1,0 +1,25 @@
+
+[package]
+name = "rust_parser"
+version = "0.2.0"
+edition = "2021"
+authors = ["Agent Antigravity"]
+description = "High-performance HTML extraction engine with memory-safe guarantees"
+
+[lib]
+name = "rust_parser"
+# cdylib → .so/.dylib (untuk Crystal FFI runtime linking)
+# staticlib → .a (untuk Crystal static linking saat compile)
+crate-type = ["cdylib", "staticlib"]
+
+[dependencies]
+scraper = "0.20"       # CSS Selector-based DOM extraction
+regex = "1"            # Regex-based extraction (fallback strategy)
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+
+[profile.release]
+opt-level = 3
+lto = true
+codegen-units = 1
+strip = true

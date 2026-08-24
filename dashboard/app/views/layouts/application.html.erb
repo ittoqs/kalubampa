@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Kalubampa Dashboard</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="description" content="Kalubampa — High-Performance Polyglot Web Crawling Dashboard">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+  </head>
+
+  <body>
+    <div class="app-container">
+      <aside class="sidebar" role="navigation" aria-label="Main navigation">
+        <div class="sidebar-logo" aria-hidden="true">
+          🕷️ Kalubampa
+        </div>
+
+        <ul class="nav-links">
+          <li>
+            <%= link_to root_path, class: "nav-link #{'active' if current_page?(root_path)}", aria: { current: (current_page?(root_path) ? "page" : nil) } do %>
+              <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
+              Dashboard
+            <% end %>
+          </li>
+          <li>
+            <%= link_to campaigns_path, class: "nav-link #{'active' if controller_name == 'campaigns'}", aria: { current: (controller_name == 'campaigns' ? "page" : nil) } do %>
+              <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+              Campaigns
+            <% end %>
+          </li>
+          <li>
+            <%= link_to results_path, class: "nav-link #{'active' if controller_name == 'results'}", aria: { current: (controller_name == 'results' ? "page" : nil) } do %>
+              <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4"></path></svg>
+              Results
+            <% end %>
+          </li>
+          <li>
+            <%= link_to "/sidekiq", class: "nav-link", target: "_blank", rel: "noopener noreferrer" do %>
+              <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+              Sidekiq UI
+            <% end %>
+          </li>
+        </ul>
+
+        <div class="sidebar-footer">
+          <div class="sidebar-section-label">Redis Queues</div>
+          <div class="queue-stat-row">
+            <span>Task Queue</span>
+            <span class="success-text" style="font-weight: 600;"><%= queue_stats[:tasks] %></span>
+          </div>
+          <div class="queue-stat-row">
+            <span>Processing</span>
+            <span class="warning-text" style="font-weight: 600;"><%= queue_stats[:processing] %></span>
+          </div>
+          <div class="queue-stat-row">
+            <span>Results</span>
+            <span class="success-text" style="font-weight: 600;"><%= queue_stats[:results] %></span>
+          </div>
+        </div>
+      </aside>
+
+      <main class="main-content" role="main">
+        <% if notice %>
+          <div class="alert alert-notice" role="alert"><%= notice %></div>
+        <% end %>
+        <% if alert %>
+          <div class="alert alert-alert" role="alert"><%= alert %></div>
+        <% end %>
+
+        <%= yield %>
+      </main>
+    </div>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        setTimeout(() => {
+          const alerts = document.querySelectorAll(".alert");
+          alerts.forEach(alert => {
+            alert.style.transition = "opacity 0.5s ease-out";
+            alert.style.opacity = "0";
+            setTimeout(() => alert.remove(), 500);
+          });
+        }, 5000);
+      });
+    </script>
+  </body>
+</html>

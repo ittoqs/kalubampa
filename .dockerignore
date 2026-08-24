@@ -1,0 +1,33 @@
+.git
+.gitignore
+.env
+.env.local
+.ruby-version
+.rspec
+
+# Rails specific
+dashboard/tmp/
+dashboard/log/
+dashboard/public/assets/
+dashboard/public/packs/
+dashboard/public/packs-test/
+dashboard/node_modules/
+dashboard/yarn-error.log
+dashboard/.bundle
+dashboard/vendor/bundle
+
+# Worker specific
+worker/bin/
+worker/lib/
+worker/.shard.lock
+
+# Parser specific
+parser/target/
+parser/Cargo.lock
+
+# Editor directories and files
+.idea/
+.vscode/
+*.swp
+*.swo
+*~

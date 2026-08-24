@@ -1,0 +1,36 @@
+FROM ruby:3.3-alpine AS builder
+
+RUN apk add --no-cache \
+    build-base \
+    postgresql-dev \
+    tzdata \
+    nodejs \
+    yarn
+
+WORKDIR /app
+
+COPY dashboard/Gemfile dashboard/Gemfile.lock* ./
+RUN bundle install --jobs 4 --retry 3 --without development test
+
+COPY dashboard/ .
+RUN bundle exec rails assets:precompile 2>/dev/null || true
+
+FROM ruby:3.3-alpine AS runtime
+
+RUN apk add --no-cache \
+    postgresql-client \
+    tzdata
+
+WORKDIR /app
+
+COPY --from=builder /usr/local/bundle /usr/local/bundle
+COPY --from=builder /app .
+
+RUN addgroup -S rails && adduser -S rails -G rails && \
+    chown -R rails:rails /app
+
+USER rails
+
+EXPOSE 3000
+
+CMD ["bundle", "exec", "puma", "-C", "config/puma.rb"]

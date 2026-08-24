@@ -1,0 +1,82 @@
+<div class="header-actions">
+  <div>
+    <h1>Results</h1>
+    <p class="subtitle">Extracted data from all completed campaigns.</p>
+  </div>
+</div>
+
+<div class="card search-card">
+  <%= form_with url: results_path, method: :get, local: true, class: "search-form" do |form| %>
+    <div class="search-input-wrap">
+      <%= form.label :search, "Search extracted data" %>
+      <%= form.text_field :search, value: params[:search], placeholder: "Search for any extracted value..." %>
+    </div>
+    <div class="search-actions">
+      <%= form.submit "Search", class: "btn btn-primary" %>
+      <% if params[:search].present? %>
+        <%= link_to "Clear", results_path, class: "btn btn-secondary" %>
+      <% end %>
+    </div>
+  <% end %>
+</div>
+
+<div class="table-container">
+  <table>
+    <thead>
+      <tr>
+        <th>Extracted Data (Preview)</th>
+        <th>Source URL</th>
+        <th>Campaign</th>
+        <th>Extracted At</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @results.each do |result| %>
+        <tr>
+          <td>
+            <div class="result-preview">
+              <%= link_to result_path(result), class: "table-link" do %>
+                <% result.extracted_data.first(3).each do |key, value| %>
+                  <div class="kv-pair">
+                    <span class="kv-key"><%= key %>:</span>
+                    <span><%= value.to_s.truncate(40) %></span>
+                  </div>
+                <% end %>
+                <% if result.extracted_data.size > 3 %>
+                  <div class="kv-more">+<%= result.extracted_data.size - 3 %> more fields</div>
+                <% end %>
+              <% end %>
+            </div>
+          </td>
+          <td class="url-cell">
+            <% src = result.target_url %>
+            <% if src.present? %>
+              <%= link_to src.truncate(40), safe_external_url(src), target: "_blank", rel: "noopener noreferrer", class: "text-secondary" %>
+            <% else %>
+              -
+            <% end %>
+          </td>
+          <td>
+            <% if result.campaign %>
+              <%= link_to result.campaign.name, campaign_path(result.campaign), class: "text-secondary" %>
+            <% else %>
+              -
+            <% end %>
+          </td>
+          <td class="text-secondary"><%= time_ago_in_words(result.created_at) %> ago</td>
+        </tr>
+      <% end %>
+      <% if @results.empty? %>
+        <tr>
+          <td colspan="4" class="empty-cell">
+            <% if params[:search].present? %>
+              No results found matching "<%= params[:search] %>".
+            <% else %>
+              No results available yet.
+            <% end %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>

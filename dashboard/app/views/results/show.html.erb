@@ -1,0 +1,77 @@
+<div class="breadcrumb">
+  <%= link_to "← Back to Results", results_path, class: "text-secondary" %>
+</div>
+
+<div class="header-actions">
+  <div>
+    <h1>Result Detail</h1>
+    <p class="subtitle">
+      Extracted <%= time_ago_in_words(@result.created_at) %> ago
+      <% if @result.campaign %>
+        from <%= link_to @result.campaign.name, campaign_path(@result.campaign) %>
+      <% end %>
+    </p>
+  </div>
+</div>
+
+<div class="result-detail-grid">
+  <div class="card">
+    <h3 class="section-label">Extracted Data</h3>
+    <div class="data-table">
+      <table>
+        <thead>
+          <tr>
+            <th>Field</th>
+            <th>Value</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @result.extracted_data.each do |key, value| %>
+            <tr>
+              <td class="data-key"><%= key %></td>
+              <td>
+                <% str_val = value.to_s %>
+                <% safe_url = safe_external_url(str_val) %>
+                <% if safe_url != "#" && str_val.match?(/\Ahttps?:\/\//) %>
+                  <%= link_to str_val.truncate(80), safe_url, target: "_blank", rel: "noopener noreferrer" %>
+                <% else %>
+                  <span class="data-value"><%= str_val.presence || "N/A" %></span>
+                <% end %>
+              </td>
+            </tr>
+          <% end %>
+          <% if @result.extracted_data.empty? %>
+            <tr>
+              <td colspan="2" class="empty-cell">No data extracted.</td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3 class="section-label">Source</h3>
+    <div class="source-info">
+      <div class="kv-pair">
+        <span class="kv-key">Target URL</span>
+        <% if @result.target_url.present? %>
+          <%= link_to @result.target_url, safe_external_url(@result.target_url), target: "_blank", rel: "noopener noreferrer", class: "url-break" %>
+        <% else %>
+          <span class="text-secondary">N/A</span>
+        <% end %>
+      </div>
+      <div class="kv-pair">
+        <span class="kv-key">Campaign</span>
+        <span><%= @result.campaign&.name || "Unknown" %></span>
+      </div>
+      <div class="kv-pair">
+        <span class="kv-key">Extracted At</span>
+        <span><%= @result.created_at.strftime("%Y-%m-%d %H:%M:%S UTC") %></span>
+      </div>
+    </div>
+
+    <h3 class="section-label" style="margin-top: 24px;">Raw JSON</h3>
+    <pre class="json-preview"><code><%= JSON.pretty_generate(@result.extracted_data) %></code></pre>
+  </div>
+</div>

@@ -1,0 +1,10 @@
+<div style="margin-bottom: 24px;">
+  <%= link_to "← Back to Campaign", campaign_path(@campaign), style: "color: var(--text-secondary); font-size: 14px; font-weight: 500;" %>
+</div>
+
+<h1>Edit Campaign</h1>
+<p class="subtitle">Update campaign details.</p>
+
+<div class="card" style="max-width: 800px;">
+  <%= render 'form', campaign: @campaign %>
+</div>

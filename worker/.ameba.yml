@@ -1,0 +1,11 @@
+Metrics/LineLength:
+  Max: 120
+
+Style/StringTemplate:
+  Enabled: true
+
+Naming/FileName:
+  Enabled: true
+
+Naming/MethodName:
+  Enabled: true

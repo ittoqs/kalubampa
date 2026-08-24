@@ -1,0 +1,22 @@
+default: &default
+  adapter: postgresql
+  encoding: unicode
+  host: <%= ENV.fetch("DATABASE_HOST", "localhost") %>
+  port: <%= ENV.fetch("DATABASE_PORT", "5432") %>
+  username: <%= ENV.fetch("DATABASE_USER", "kalubampa") %>
+  password: <%= ENV.fetch("DATABASE_PASSWORD", "kalubampa_dev") %>
+  pool: <%= ENV.fetch("RAILS_MAX_THREADS", 5) %>
+
+development:
+  <<: *default
+  database: kalubampa_development
+
+test:
+  <<: *default
+  database: kalubampa_test
+
+production:
+  <<: *default
+  database: <%= ENV.fetch("POSTGRES_DB", "kalubampa_production") %>
+  username: <%= ENV.fetch("DATABASE_USER") %>
+  password: <%= ENV.fetch("DATABASE_PASSWORD") %>

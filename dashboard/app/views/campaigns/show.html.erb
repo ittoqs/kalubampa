@@ -1,0 +1,91 @@
+<div class="breadcrumb">
+  <%= link_to "← Back to Campaigns", campaigns_path, class: "text-secondary" %>
+</div>
+
+<div class="header-actions">
+  <div>
+    <div class="campaign-title-row">
+      <h1><%= @campaign.name %></h1>
+      <span class="badge <%= @campaign.status %>"><%= @campaign.status %></span>
+    </div>
+    <p class="subtitle"><%= @campaign.description.presence || "No description provided." %></p>
+  </div>
+
+  <div class="action-buttons">
+    <% if @campaign.status == "draft" %>
+      <%= link_to "Edit", edit_campaign_path(@campaign), class: "btn btn-secondary" %>
+      <%= button_to "Dispatch Tasks", dispatch_campaign_path(@campaign), method: :post, class: "btn btn-primary" %>
+    <% end %>
+    <%= button_to "Delete", campaign_path(@campaign), method: :delete, data: { turbo_confirm: "Are you sure you want to delete this campaign and all its tasks/results?" }, class: "btn btn-danger" %>
+  </div>
+</div>
+
+<div class="card campaign-progress-card">
+  <div class="progress-header-lg">
+    <div class="card-title">Crawling Progress</div>
+    <div class="progress-percentage"><%= @campaign.progress_percentage %>%</div>
+  </div>
+  <div class="progress-bg progress-lg">
+    <div class="progress-fill" style="width: <%= @campaign.progress_percentage %>%;"></div>
+  </div>
+
+  <div class="stat-grid-4">
+    <div>
+      <div class="stat-label">Total Tasks</div>
+      <div class="stat-value"><%= @task_stats.values.sum %></div>
+    </div>
+    <div>
+      <div class="stat-label">Pending / Queued</div>
+      <div class="stat-value warning-text"><%= (@task_stats["pending"] || 0) + (@task_stats["queued"] || 0) + (@task_stats["processing"] || 0) %></div>
+    </div>
+    <div>
+      <div class="stat-label">Completed</div>
+      <div class="stat-value success-text"><%= @task_stats["completed"] || 0 %></div>
+    </div>
+    <div>
+      <div class="stat-label">Failed</div>
+      <div class="stat-value danger-text"><%= @task_stats["failed"] || 0 %></div>
+    </div>
+  </div>
+</div>
+
+<h2>Tasks List</h2>
+<div class="table-container">
+  <table>
+    <thead>
+      <tr>
+        <th>Target URL</th>
+        <th>Status</th>
+        <th>Results</th>
+        <th>Updated</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @tasks.each do |task| %>
+        <tr>
+          <td class="url-cell" title="<%= task.target_url %>">
+            <%= link_to task.target_url.truncate(60), safe_external_url(task.target_url), target: "_blank", rel: "noopener noreferrer" %>
+          </td>
+          <td>
+            <span class="badge <%= task.status %>"><%= task.status %></span>
+          </td>
+          <td>
+            <% if task.crawl_results.any? %>
+              <%= link_to "#{task.crawl_results.size} result(s)", results_path, class: "table-link" %>
+            <% elsif task.status == "failed" %>
+              <span class="danger-text text-sm"><%= task.error_message || "Unknown error" %></span>
+            <% else %>
+              <span class="text-secondary text-sm">Waiting...</span>
+            <% end %>
+          </td>
+          <td class="text-secondary"><%= time_ago_in_words(task.updated_at) %> ago</td>
+        </tr>
+      <% end %>
+      <% if @tasks.empty? %>
+        <tr>
+          <td colspan="4" class="empty-cell">No tasks found in this campaign.</td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>

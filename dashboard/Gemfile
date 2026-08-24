@@ -1,0 +1,29 @@
+source "https://rubygems.org"
+
+ruby ">= 3.2.0"
+
+gem "rails", "~> 7.1"
+gem "puma", "~> 6.4"
+
+gem "pg", "~> 1.5"
+
+gem "sidekiq", "~> 7.2"
+gem "sidekiq-cron", "~> 2.0"
+gem "redis", "~> 5.1"
+
+gem "pagy", "~> 9.0"
+
+gem "sprockets-rails"
+gem "importmap-rails"
+gem "turbo-rails"
+gem "stimulus-rails"
+
+group :development, :test do
+  gem "debug", platforms: %i[mri mingw x64_mingw]
+  gem "rspec-rails", "~> 6.1"
+  gem "factory_bot_rails"
+end
+
+group :development do
+  gem "web-console"
+end

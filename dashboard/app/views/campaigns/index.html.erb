@@ -1,0 +1,57 @@
+<div class="header-actions">
+  <div>
+    <h1>Campaigns</h1>
+    <p class="subtitle">Manage crawling jobs and dispatch tasks.</p>
+  </div>
+  <%= link_to "+ New Campaign", new_campaign_path, class: "btn btn-primary" %>
+</div>
+
+<div class="table-container">
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Status</th>
+        <th>Progress</th>
+        <th>Created</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @campaigns.each do |campaign| %>
+        <tr>
+          <td>
+            <div class="table-link"><%= campaign.name %></div>
+            <div class="cell-sub"><%= campaign.tasks_count_cache %> total URLs</div>
+          </td>
+          <td>
+            <span class="badge <%= campaign.status %>"><%= campaign.status %></span>
+          </td>
+          <td class="progress-cell">
+            <div class="progress-header">
+              <span class="progress-label"><%= campaign.progress_percentage %>%</span>
+              <span class="text-secondary"><%= campaign.completed_tasks_count %> / <%= campaign.tasks_count_cache %></span>
+            </div>
+            <div class="progress-bg">
+              <div class="progress-fill" style="width: <%= campaign.progress_percentage %>%;"></div>
+            </div>
+          </td>
+          <td class="text-secondary"><%= time_ago_in_words(campaign.created_at) %> ago</td>
+          <td>
+            <div class="action-buttons">
+              <%= link_to "View", campaign_path(campaign), class: "btn btn-secondary btn-sm" %>
+              <% if campaign.status == "draft" %>
+                <%= button_to "Dispatch", dispatch_campaign_path(campaign), method: :post, class: "btn btn-primary btn-sm" %>
+              <% end %>
+            </div>
+          </td>
+        </tr>
+      <% end %>
+      <% if @campaigns.empty? %>
+        <tr>
+          <td colspan="5" class="empty-cell">No campaigns found. Create your first campaign to start crawling.</td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>

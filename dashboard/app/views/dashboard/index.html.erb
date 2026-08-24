@@ -1,0 +1,104 @@
+<div class="header-actions">
+  <div>
+    <h1>Dashboard</h1>
+    <p class="subtitle">Overview of system metrics and extraction performance.</p>
+  </div>
+</div>
+
+<div class="card-grid">
+  <div class="card">
+    <div class="card-title">Total Campaigns</div>
+    <div class="card-value"><%= @stats[:total_campaigns] %></div>
+    <div class="stat-sub success"><%= @stats[:active_campaigns] %> active</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Tasks Processed</div>
+    <div class="card-value"><%= @stats[:completed_tasks] %></div>
+    <div class="stat-sub">Out of <%= @stats[:total_tasks] %> total</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Total Results</div>
+    <div class="card-value"><%= @stats[:total_results] %></div>
+    <div class="stat-sub">Extracted entities</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Failed Tasks</div>
+    <div class="card-value danger-text"><%= @stats[:failed_tasks] %></div>
+    <div class="stat-sub">Needs attention</div>
+  </div>
+</div>
+
+<div class="dashboard-grid">
+  <div>
+    <h2>Recent Campaigns</h2>
+    <div class="table-container">
+      <table>
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Status</th>
+            <th>Progress</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @recent_campaigns.each do |campaign| %>
+            <tr>
+              <td>
+                <%= link_to campaign.name, campaign_path(campaign), class: "table-link" %>
+              </td>
+              <td>
+                <span class="badge <%= campaign.status %>"><%= campaign.status %></span>
+              </td>
+              <td>
+                <div class="progress-label"><%= campaign.progress_percentage %>%</div>
+                <div class="progress-bg">
+                  <div class="progress-fill" style="width: <%= campaign.progress_percentage %>%;"></div>
+                </div>
+              </td>
+            </tr>
+          <% end %>
+          <% if @recent_campaigns.empty? %>
+            <tr>
+              <td colspan="3" class="empty-cell">No campaigns yet.</td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div>
+    <h2>Recent Results</h2>
+    <div class="table-container">
+      <table>
+        <thead>
+          <tr>
+            <th>Extracted Data</th>
+            <th>Campaign</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @stats[:recent_results].each do |result| %>
+            <tr>
+              <td>
+                <%= link_to result_path(result), class: "table-link" do %>
+                  <% first_key = result.extracted_data.keys.first %>
+                  <%= result.data_field(first_key).to_s.truncate(40) %>
+                <% end %>
+              </td>
+              <td class="text-secondary"><%= result.campaign&.name %></td>
+            </tr>
+          <% end %>
+          <% if @stats[:recent_results].empty? %>
+            <tr>
+              <td colspan="2" class="empty-cell">No results yet.</td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

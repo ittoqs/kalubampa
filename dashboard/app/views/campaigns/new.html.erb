@@ -1,0 +1,10 @@
+<div style="margin-bottom: 24px;">
+  <%= link_to "← Back to Campaigns", campaigns_path, style: "color: var(--text-secondary); font-size: 14px; font-weight: 500;" %>
+</div>
+
+<h1>Create New Campaign</h1>
+<p class="subtitle">Setup a new crawling job and define target URLs.</p>
+
+<div class="card" style="max-width: 800px;">
+  <%= render 'form', campaign: @campaign %>
+</div>

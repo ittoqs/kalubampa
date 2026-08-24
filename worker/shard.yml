@@ -1,0 +1,25 @@
+
+name: kalubampa_worker
+version: 0.2.0
+
+authors:
+  - Ampolleng
+
+description: |
+  High-performance concurrent web crawler worker.
+  Menggunakan Fibers dan Event Loop (libevent) untuk meluncurkan
+  jutaan HTTP request secara konkuren. Berkomunikasi dengan Rust
+  Parser Engine via FFI (C-ABI) untuk ekstraksi HTML yang aman.
+
+targets:
+  kalubampa_worker:
+    main: src/kalubampa_worker.cr
+
+crystal: ">= 1.13.0"
+
+license: MIT
+
+dependencies:
+  redis:
+    github: stefanwille/crystal-redis
+    version: "~> 2.9"

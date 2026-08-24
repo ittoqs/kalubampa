@@ -1,0 +1,40 @@
+FROM rust:1.79-alpine AS rust-builder
+
+RUN apk add --no-cache musl-dev
+
+WORKDIR /build/parser
+COPY parser/ .
+
+RUN cargo build --release
+
+FROM crystallang/crystal:1.13-alpine AS crystal-builder
+
+RUN apk add --no-cache yaml-dev
+
+WORKDIR /build/worker
+
+COPY --from=rust-builder /build/parser/target/release/librust_parser.a /usr/local/lib/
+COPY --from=rust-builder /build/parser/include/rust_parser.h /usr/local/include/
+
+COPY worker/ .
+
+RUN shards install
+RUN crystal build src/kalubampa_worker.cr \
+    --release \
+    --static \
+    --link-flags "-L/usr/local/lib -lrust_parser" \
+    -o /build/kalubampa_worker
+
+FROM alpine:3.20 AS runtime
+
+RUN apk add --no-cache \
+    ca-certificates
+
+WORKDIR /app
+
+COPY --from=crystal-builder /build/kalubampa_worker .
+
+RUN addgroup -S kalubampa && adduser -S kalubampa -G kalubampa
+USER kalubampa
+
+ENTRYPOINT ["./kalubampa_worker"]
